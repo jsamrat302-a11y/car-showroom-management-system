@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Car Showroom Management System</title>
+<style>
+:root{--bg:#f4f6fa;--card:#fff;--ink:#1d2433;--mut:#5b6580;--line:#aab4cc;--pri:#2b4a85;--pic:#fff;--hi:#ffe9a0;--rel:#eef1f8;--err:#a12626;--ok:#1e6b34;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10151f;--card:#1a2230;--ink:#e6ebf5;--mut:#9aa6c0;--line:#4a587a;--pri:#7a9be6;--pic:#0b1220;--hi:#5a4c1a;--rel:#232d42;--err:#ff8a8a;--ok:#7fd69a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10151f;--card:#1a2230;--ink:#e6ebf5;--mut:#9aa6c0;--line:#4a587a;--pri:#7a9be6;--pic:#0b1220;--hi:#5a4c1a;--rel:#232d42;--err:#ff8a8a;--ok:#7fd69a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,Segoe UI,Arial,sans-serif}
+header{padding:16px 18px 6px}h1{margin:0;font-size:20px}header p{margin:2px 0 0;color:var(--mut);font-size:13px}
+.tabs{display:flex;gap:6px;padding:8px 18px;flex-wrap:wrap}
+button,select,input{font:inherit;color:var(--ink)}
+.tab,.pill{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:6px 14px;cursor:pointer}
+.tab.on,.pill.on{background:var(--pri);color:var(--pic);border-color:var(--pri)}
+main{padding:0 18px 24px;max-width:1100px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:14px}
+.wrap{overflow-x:auto}svg{width:100%;min-width:640px;height:auto;display:block}
+.ent rect{fill:var(--card);stroke:var(--ink);stroke-width:1.6}.rel polygon{fill:var(--rel);stroke:var(--ink);stroke-width:1.2}
+.n{cursor:pointer}.n text{fill:var(--ink);font-size:12px;text-anchor:middle;dominant-baseline:middle;pointer-events:none}
+.n:hover rect,.n:hover polygon,.n.sel rect,.n.sel polygon{fill:var(--hi);stroke:var(--pri);stroke-width:2.4}
+.ln{stroke:var(--line);stroke-width:1.5}.ln.sel{stroke:var(--pri);stroke-width:2.5}
+.cd{fill:var(--pri);font-size:12px;font-weight:700;text-anchor:middle}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.chip{border:1.5px solid var(--ink);border-radius:50px;padding:4px 14px;font-size:13px;background:var(--card)}
+.chip.pk{text-decoration:underline;font-weight:600}.chip.der{border-style:dashed}.chip.multi{border:4px double var(--ink);padding:2px 12px}.chip.fk{border-color:var(--pri);color:var(--pri);font-style:italic}
+.legend{font-size:12px;color:var(--mut)}.legend span{margin-right:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;align-items:end}
+label{display:block;font-size:12px;color:var(--mut);margin-bottom:2px}
+input,select{width:100%;padding:7px;border:1px solid var(--line);border-radius:6px;background:var(--card)}
+.go{background:var(--pri);color:var(--pic);border:0;border-radius:6px;padding:8px 14px;cursor:pointer}
+.del{background:none;border:1px solid var(--err);color:var(--err);border-radius:5px;padding:2px 8px;cursor:pointer}
+table{border-collapse:collapse;width:100%;font-size:13px}th{background:var(--pri);color:var(--pic);text-align:left;padding:6px 8px;white-space:nowrap}td{padding:6px 8px;border-bottom:1px solid var(--line)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:12px}.stat{background:var(--card);border:1px solid var(--line);border-radius:8px;text-align:center;padding:8px}.stat b{display:block;font-size:22px;color:var(--pri)}
+#msg{min-height:22px;margin-bottom:8px;font-size:14px}.err{color:var(--err)}.ok{color:var(--ok)}
+.hide{display:none}
+</style></head><body>
+<header><h1>🚗 Car Showroom Management System</h1><p>Interactive ER diagram with a working database — tap any entity or relationship. <a href="er_diagram.png">ER diagram (PNG)</a> · <a href="Car_Showroom_RDBMS_Lab_Record.pdf">Lab record (PDF)</a> · <a href="Mini_Project_Report.docx">Project report</a> · <a href="Viva_Explanation_Script.md">Viva script</a></p></header>
+<div class="tabs"><button class="tab on" data-t="er">ER Diagram</button><button class="tab" data-t="data">Data Manager</button></div>
+<main>
+<section id="er">
+ <div class="card wrap"><svg id="svg" viewBox="0 0 900 370"></svg>
+  <div class="legend"><span>▭ Entity</span><span>◇ Relationship</span><span><b>1 / M</b> Cardinality</span></div></div>
+ <div class="card" id="panel"></div>
+</section>
+<section id="data" class="hide">
+ <div class="stats" id="stats"></div>
+ <div class="chips" id="pills"></div><div id="msg"></div>
+ <div class="card"><form id="form" class="grid"></form></div>
+ <div class="card wrap" id="tbl"></div>
+</section>
+</main>
+<script>
+const T={
+Supplier:{pk:'Supplier_ID',pre:'S',title:'Supplier',attrs:[['Supplier_ID','pk'],['Name'],['Company_Type'],['Address'],['Years_In_Business','der'],['Email','multi'],['Phone_No','multi']],
+ f:[['Name','Name','text'],['Company_Type','Company type','text'],['Address','Address','text'],['Est_Year','Established year','number']]},
+Delivery:{pk:'Delivery_ID',pre:'D',title:'Vehicle Delivery',attrs:[['Delivery_ID','pk'],['Date'],['Quantity'],['Supplier_ID','fk'],['Inventory_ID','fk']],
+ f:[['Supplier_ID','Supplier','fk:Supplier'],['Inventory_ID','Inventory unit','fk:Inventory'],['Delivery_Date','Delivery date','date'],['Quantity','Quantity','number']]},
+Inventory:{pk:'Inventory_ID',pre:'I',title:'Vehicle Inventory',attrs:[['Inventory_ID','pk'],['Manufacture_Date'],['Status'],['Location'],['Model_ID','fk']],
+ f:[['Model_ID','Model','fk:Model'],['Manufacture_Date','Manufacture date','date'],['Status','Status','sel:Available,Reserved,Sold'],['Location','Location','text']]},
+Model:{pk:'Model_ID',pre:'M',title:'Vehicle Model',attrs:[['Model_ID','pk'],['Model_Name'],['Fuel_Type'],['Category']],
+ f:[['Model_Name','Model name','text'],['Fuel_Type','Fuel type','text'],['Category','Category','text']]},
+Order:{pk:'Order_ID',pre:'O',title:'Sales Order',attrs:[['Order_ID','pk'],['Order_Date'],['Quantity_Required'],['Status'],['Customer_ID','fk'],['Branch_ID','fk'],['Inventory_ID','fk']],
+ f:[['Customer_ID','Customer','fk:Customer'],['Branch_ID','Branch','fk:Branch'],['Inventory_ID','Vehicle (inventory)','fk:Inventory'],['Order_Date','Order date','date'],['Quantity_Required','Quantity','number'],['Status','Status','sel:Pending,Confirmed,Fulfilled,Cancelled']]},
+Customer:{pk:'Customer_ID',pre:'C',title:'Customer',attrs:[['Customer_ID','pk'],['Name'],['Gender'],['Age'],['Phone_Number'],['Branch_ID','fk']],
+ f:[['Branch_ID','Branch','fk:Branch'],['Name','Name','text'],['Gender','Gender','sel:Male,Female,Other'],['Age','Age','number'],['Phone_Number','Phone number','text']]},
+Branch:{pk:'Branch_ID',pre:'B',title:'Showroom Branch',attrs:[['Branch_ID','pk'],['Name'],['Address'],['Contact_Number']],
+ f:[['Name','Name','text'],['Address','Address','text'],['Contact_Number','Contact number','text']]}};
+const POS={Supplier:[90,60],Delivery:[330,60],Inventory:[570,60],Model:[810,60],Order:[570,320],Customer:[330,320],Branch:[90,320]};
+const R=[
+{n:'Supplies',a:'Supplier',b:'Delivery',ca:'1',cb:'M',x:210,y:60,fk:'Vehicle_Delivery.Supplier_ID references Supplier'},
+{n:'Stocked',a:'Delivery',b:'Inventory',ca:'M',cb:'1',x:450,y:60,fk:'Vehicle_Delivery.Inventory_ID references Vehicle_Inventory'},
+{n:'Categorized',a:'Inventory',b:'Model',ca:'M',cb:'1',x:690,y:60,fk:'Vehicle_Inventory.Model_ID references Vehicle_Model'},
+{n:'Fulfillment',a:'Inventory',b:'Order',ca:'1',cb:'M',x:570,y:190,fk:'Sales_Order.Inventory_ID references Vehicle_Inventory'},
+{n:'Places',a:'Customer',b:'Order',ca:'1',cb:'M',x:450,y:320,fk:'Sales_Order.Customer_ID references Customer'},
+{n:'Visits',a:'Customer',b:'Branch',ca:'M',cb:'1',x:210,y:320,fk:'Customer.Branch_ID references Showroom_Branch (Sales_Order.Branch_ID also references it)'}];
+const D={
+Supplier:[{Supplier_ID:'S01',Name:'Tata Motors Ltd',Company_Type:'Manufacturer',Address:'Pune, MH',Est_Year:1945,Emails:'contact@tatamotors.com',Phones:'9876543210'},{Supplier_ID:'S02',Name:'Maruti Suzuki India',Company_Type:'Manufacturer',Address:'Gurugram, HR',Est_Year:1981,Emails:'',Phones:'9812345678'}],
+Model:[{Model_ID:'M01',Model_Name:'Nexon',Fuel_Type:'Petrol',Category:'SUV'},{Model_ID:'M02',Model_Name:'Tiago',Fuel_Type:'Petrol',Category:'Hatchback'},{Model_ID:'M03',Model_Name:'Swift',Fuel_Type:'Petrol',Category:'Hatchback'}],
+Inventory:[{Inventory_ID:'I01',Model_ID:'M01',Manufacture_Date:'2026-01-15',Status:'Available',Location:'Bay-1'},{Inventory_ID:'I02',Model_ID:'M02',Manufacture_Date:'2026-02-10',Status:'Available',Location:'Bay-2'},{Inventory_ID:'I03',Model_ID:'M03',Manufacture_Date:'2026-03-05',Status:'Available',Location:'Bay-3'}],
+Delivery:[{Delivery_ID:'D01',Supplier_ID:'S01',Inventory_ID:'I01',Delivery_Date:'2026-01-20',Quantity:1},{Delivery_ID:'D02',Supplier_ID:'S01',Inventory_ID:'I02',Delivery_Date:'2026-02-15',Quantity:1},{Delivery_ID:'D03',Supplier_ID:'S02',Inventory_ID:'I03',Delivery_Date:'2026-03-10',Quantity:1}],
+Branch:[{Branch_ID:'B01',Name:'City Center Branch',Address:'MG Road, Jaipur',Contact_Number:'0141234567'}],
+Customer:[{Customer_ID:'C01',Branch_ID:'B01',Name:'Rahul Sharma',Gender:'Male',Age:32,Phone_Number:'9123456789'}],
+Order:[]};
+const $=s=>document.querySelector(s);
+const lab=r=>r.Name||r.Model_Name||r.Location||'';
+let cur='Supplier',sel=null;
+
+/* ---------- ER diagram ---------- */
+function drawER(){
+ let s='';
+ R.forEach(r=>{[[r.a,r.ca],[r.b,r.cb]].forEach(([e,c])=>{
+  const [ex,ey]=POS[e],dx=r.x-ex,dy=r.y-ey,h=Math.abs(dx)>Math.abs(dy);
+  const lx=h?ex+Math.sign(dx)*80:ex,ly=h?ey-8:ey+Math.sign(dy)*36;
+  s+=`<line class="ln ${sel===r.n||sel===e?'sel':''}" x1="${ex}" y1="${ey}" x2="${r.x}" y2="${r.y}"/>`;
+  s+=`<text class="cd" x="${lx}" y="${ly}">${c}</text>`;});});
+ R.forEach(r=>s+=`<g class="n rel ${sel===r.n?'sel':''}" data-k="${r.n}"><polygon points="${r.x-52},${r.y} ${r.x},${r.y-26} ${r.x+52},${r.y} ${r.x},${r.y+26}"/><text x="${r.x}" y="${r.y}">${r.n}</text></g>`);
+ Object.keys(T).forEach(k=>{const [x,y]=POS[k];s+=`<g class="n ent ${sel===k?'sel':''}" data-k="${k}"><rect x="${x-65}" y="${y-22}" width="130" height="44" rx="4"/><text x="${x}" y="${y}">${T[k].title}</text></g>`;});
+ $('#svg').innerHTML=s;
+}
+function panel(){
+ const p=$('#panel');
+ if(!sel){p.innerHTML='<b>Select an entity or relationship</b><p class="legend">Tap any rectangle to see its attributes and keys, or a diamond to see how two entities connect.</p>';return;}
+ if(T[sel]){const t=T[sel];
+  const chips=t.attrs.map(([n,ty])=>`<span class="chip ${ty||''}">${n.replace(/_/g,' ')}</span>`).join('');
+  const rels=R.filter(r=>r.a===sel||r.b===sel).map(r=>{const o=r.a===sel?r.b:r.a,c=r.a===sel?r.ca+' : '+r.cb:r.cb+' : '+r.ca;return `<li><b>${r.n}</b> with ${T[o].title} — ${c}</li>`}).join('');
+  p.innerHTML=`<b>${t.title}</b> <span class="legend">(${D[sel].length} records)</span><div class="chips">${chips}</div>
+  <div class="legend"><span><u>Underlined</u> = primary key</span><span>dashed = derived</span><span>double border = multivalued</span><span><i>italic blue</i> = foreign key</span></div>
+  <ul>${rels}</ul><button class="go" onclick="openData('${sel}')">Open ${t.title} data →</button>`;
+ }else{const r=R.find(x=>x.n===sel);
+  p.innerHTML=`<b>${r.n}</b><p>${T[r.a].title} <b>(${r.ca})</b> ↔ <b>(${r.cb})</b> ${T[r.b].title}</p><p class="legend">Implemented as: ${r.fk}</p>`;}
+}
+$('#svg').addEventListener('click',e=>{const g=e.target.closest('[data-k]');sel=g?g.dataset.k:null;drawER();panel();});
+
+/* ---------- Data manager ---------- */
+function opts(ref){return D[ref].map(r=>[r[T[ref].pk],r[T[ref].pk]+' – '+lab(r)]);}
+function msg(t,bad){$('#msg').innerHTML=`<span class="${bad?'err':'ok'}">${t}</span>`;}
+function nextId(k){const t=T[k],n=D[k].map(r=>parseInt(r[t.pk].slice(t.pre.length))||0);return t.pre+String(Math.max(0,...n)+1).padStart(2,'0');}
+function openData(k){cur=k;show('data');drawData();}
+function drawData(){
+ $('#stats').innerHTML=[['Suppliers',D.Supplier.length],['Models',D.Model.length],['In stock',D.Inventory.filter(i=>i.Status==='Available').length],['Sold',D.Inventory.filter(i=>i.Status==='Sold').length],['Customers',D.Customer.length],['Orders',D.Order.length]].map(([n,v])=>`<div class="stat"><b>${v}</b>${n}</div>`).join('');
+ $('#pills').innerHTML=Object.keys(T).map(k=>`<button class="pill ${k===cur?'on':''}" data-p="${k}">${T[k].title}</button>`).join('');
+ const t=T[cur];
+ $('#form').innerHTML=t.f.map(([n,l,ty])=>{let c;
+  if(ty.startsWith('fk:'))c=`<select name="${n}" required>${opts(ty.slice(3)).map(([v,x])=>`<option value="${v}">${x}</option>`).join('')}</select>`;
+  else if(ty.startsWith('sel:'))c=`<select name="${n}">${ty.slice(4).split(',').map(v=>`<option>${v}</option>`).join('')}</select>`;
+  else c=`<input name="${n}" type="${ty}" required>`;
+  return `<div><label>${l}</label>${c}</div>`;}).join('')
+  +(cur==='Supplier'?'<div><label>Emails (comma separated)</label><input name="Emails"></div><div><label>Phone numbers (comma separated)</label><input name="Phones"></div>':'')
+  +'<div><button class="go">Add record</button></div>';
+ const cols=[t.pk,...t.f.map(f=>f[0])].concat(cur==='Supplier'?['Years_In_Business','Emails','Phones']:[]);
+ $('#tbl').innerHTML=`<table><tr>${cols.map(c=>`<th>${c}</th>`).join('')}<th></th></tr>`+
+  (D[cur].map(r=>`<tr>${cols.map(c=>`<td>${c==='Years_In_Business'?(r.Est_Year?2026-r.Est_Year:''):(r[c]??'')}</td>`).join('')}<td><button class="del" data-d="${r[t.pk]}">Delete</button></td></tr>`).join('')||`<tr><td colspan="${cols.length+1}">No records yet.</td></tr>`)+'</table>';
+}
+$('#form').addEventListener('submit',e=>{
+ e.preventDefault();const f=e.target,t=T[cur],row={[t.pk]:nextId(cur)};
+ t.f.forEach(([n,,ty])=>row[n]=ty==='number'?Number(f[n].value):f[n].value.trim());
+ if(cur==='Order'){const inv=D.Inventory.find(i=>i.Inventory_ID===row.Inventory_ID);
+  if(inv.Status==='Sold')return msg('This vehicle is already sold.',1);
+  const s={Fulfilled:'Sold',Confirmed:'Reserved'}[row.Status];if(s)inv.Status=s;}
+ if(cur==='Supplier'){row.Emails=f.Emails.value;row.Phones=f.Phones.value;}
+ D[cur].push(row);msg(`Record ${row[t.pk]} added.`);drawData();
+});
+document.addEventListener('click',e=>{
+ const p=e.target.closest('[data-p]');if(p){cur=p.dataset.p;msg('');drawData();}
+ const d=e.target.closest('[data-d]');
+ if(d){const id=d.dataset.d,dep=Object.keys(T).find(k=>T[k].f.some(([n,,ty])=>ty==='fk:'+cur&&D[k].some(r=>r[n]===id)));
+  if(dep)return msg(`Cannot delete ${id}: used by ${T[dep].title} records (foreign key).`,1);
+  D[cur]=D[cur].filter(r=>r[T[cur].pk]!==id);msg(`Record ${id} deleted.`);drawData();}
+});
+
+/* ---------- tabs ---------- */
+function show(t){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.t===t));$('#er').classList.toggle('hide',t!=='er');$('#data').classList.toggle('hide',t!=='data');}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{show(b.dataset.t);if(b.dataset.t==='data')drawData();else{drawER();panel();}});
+drawER();panel();
+</script></body></html>

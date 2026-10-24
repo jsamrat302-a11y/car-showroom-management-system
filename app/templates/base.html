@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Car Showroom Management System</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head><body>
+<header><div class="brand">&#128663; Car Showroom Management System</div>
+  <div class="sub">RDBMS project &middot; MySQL &middot; Flask</div></header>
+<nav>
+  <a href="{{ url_for('home') }}" class="{{ 'on' if active=='home' }}">Dashboard</a>
+  {% for k, c in tables.items() %}<a href="{{ url_for('crud', key=k) }}" class="{{ 'on' if active==k }}">{{ c.title }}</a>{% endfor %}
+  <a href="{{ url_for('views_page') }}" class="{{ 'on' if active=='views' }}">Views</a>
+  <a href="{{ url_for('procedures_page') }}" class="{{ 'on' if active=='procedures' }}">Procedures &amp; Triggers</a>
+  <a href="{{ url_for('lab_page') }}" class="{{ 'on' if active=='lab' }}">Lab Queries</a>
+</nav>
+<main>
+  {% for cat, msg in get_flashed_messages(with_categories=true) %}<div class="flash {{ cat }}">{{ msg }}</div>{% endfor %}
+  {% block body %}{% endblock %}
+</main>
+<footer>Car Showroom Management System &middot; DBMS lab project</footer>
+</body></html>

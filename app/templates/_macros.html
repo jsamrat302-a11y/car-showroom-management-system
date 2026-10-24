@@ -1,0 +1,6 @@
+{% macro rtable(rows) %}
+{% if rows %}<div class="wrap"><table>
+  <tr>{% for k in rows[0].keys() %}<th>{{ k }}</th>{% endfor %}</tr>
+  {% for r in rows %}<tr>{% for v in r.values() %}<td>{{ 'NULL' if v is none else v }}</td>{% endfor %}</tr>{% endfor %}
+</table></div>{% else %}<p class="muted">Empty set (0 rows)</p>{% endif %}
+{% endmacro %}

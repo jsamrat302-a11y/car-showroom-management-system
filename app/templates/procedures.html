@@ -1,0 +1,11 @@
+{% extends "base.html" %}{% from "_macros.html" import rtable %}
+{% block body %}
+<h2>Stored Procedures &amp; Triggers <span class="muted">(Lab 12)</span></h2>
+<div class="card"><h3>CALL GetOrdersByStatus(<form class="inline" method="get">
+  <select name="status" onchange="this.form.submit()">{% for s in ['Pending','Confirmed','Fulfilled','Cancelled'] %}<option {{ 'selected' if s == status }}>{{ s }}</option>{% endfor %}</select></form>)</h3>
+  {{ rtable(by_status) }}</div>
+<div class="card"><h3>CALL GetAvailableVehicles()</h3>{{ rtable(available) }}</div>
+<div class="card"><h3>Order_Log <span class="muted">(filled by the after_order_insert trigger)</span></h3>
+  <p class="muted">Add a Sales Order to see a new row here. Setting an order to Fulfilled fires after_order_fulfilled and marks the vehicle Sold. before_order_insert blocks orders for vehicles that are already Sold.</p>
+  {{ rtable(log) }}</div>
+{% endblock %}

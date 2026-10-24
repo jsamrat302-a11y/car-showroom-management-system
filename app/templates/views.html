@@ -1,0 +1,6 @@
+{% extends "base.html" %}{% from "_macros.html" import rtable %}
+{% block body %}
+<h2>Views <span class="muted">(Lab 10)</span></h2>
+<p class="muted">A view is a virtual table stored as a SELECT query. Each result below is read live from the database.</p>
+{% for name, rows in results %}<div class="card"><h3>{{ name }}</h3>{{ rtable(rows) }}</div>{% endfor %}
+{% endblock %}

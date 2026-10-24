@@ -1,0 +1,65 @@
+erDiagram
+    SUPPLIER ||--o{ VEHICLE_DELIVERY : supplies
+    VEHICLE_DELIVERY }o--|| VEHICLE_INVENTORY : stocked
+    VEHICLE_INVENTORY }o--|| VEHICLE_MODEL : categorized
+    VEHICLE_INVENTORY ||--o{ SALES_ORDER : fulfillment
+    CUSTOMER ||--o{ SALES_ORDER : places
+    CUSTOMER }o--|| SHOWROOM_BRANCH : visits
+
+    SUPPLIER {
+        string Supplier_ID PK
+        string Name
+        string Company_Type
+        string Address
+        string Years_In_Business
+        string Email
+        string Phone_No
+    }
+
+    VEHICLE_DELIVERY {
+        string Delivery_ID PK
+        string Supplier_ID FK
+        string Inventory_ID FK
+        date Date
+        int Quantity
+    }
+
+    VEHICLE_INVENTORY {
+        string Inventory_ID PK
+        string Model_ID FK
+        date Manufacture_Date
+        string Status
+        string Location
+    }
+
+    VEHICLE_MODEL {
+        string Model_ID PK
+        string Model_Name
+        string Fuel_Type
+        string Category
+    }
+
+    SALES_ORDER {
+        string Order_ID PK
+        string Customer_ID FK
+        string Branch_ID FK
+        string Inventory_ID FK
+        date Order_Date
+        int Quantity_Required
+        string Status
+    }
+
+    CUSTOMER {
+        string Customer_ID PK
+        string Name
+        string Gender
+        int Age
+        string Phone_Number
+    }
+
+    SHOWROOM_BRANCH {
+        string Branch_ID PK
+        string Name
+        string Address
+        string Contact_Number
+    }

@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% from "_macros.html" import rtable %}
+{% block body %}
+<h2>Lab Queries <span class="muted">(Labs 6, 7, 9, 10, 12)</span></h2>
+<p class="muted">Every SELECT and CALL from <code>docs/lab_record.md</code>, executed live. Results come from your database, so they match the lab record only while the sample data is unchanged.</p>
+{% for lab, items in groups.items() %}
+<h3 class="lab">{{ lab }}</h3>
+{% for title, sql, rows, error in items %}
+<details class="card"><summary>{{ title or 'Query' }}</summary>
+  <pre>{{ sql }}</pre>
+  {% if error %}<div class="flash err">{{ error }}</div>{% else %}{{ rtable(rows) }}{% endif %}
+</details>{% endfor %}{% endfor %}
+{% endblock %}

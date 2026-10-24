@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% from "_macros.html" import rtable %}
+{% block body %}
+<h2>Dashboard</h2>
+<div class="stats">{% for n, v in stats %}<div class="stat"><b>{{ v }}</b>{{ n }}</div>{% endfor %}</div>
+<div class="card"><b>How it works.</b> Suppliers deliver vehicles &rarr; stored in Inventory by Model &rarr;
+  Customers place Sales Orders at a Branch &rarr; a trigger marks the vehicle Sold when the order is Fulfilled.</div>
+<div class="card"><h3>Stock per model <span class="muted">(view: Model_Stock)</span></h3>{{ rtable(stock) }}</div>
+{% endblock %}

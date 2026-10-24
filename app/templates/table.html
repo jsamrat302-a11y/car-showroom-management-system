@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block body %}
+<h2>{{ cfg.title }}</h2>
+<div class="card"><form class="add" method="post">
+  {% for f in fields %}<div><label>{{ f.label }}</label>
+    {% if f.type == 'sel' %}<select name="{{ f.col }}" required>{% for v, l in f.opts %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select>
+    {% else %}<input name="{{ f.col }}" type="{{ f.type }}" {{ 'step=0.01' if f.col == 'Total_Amount' }} required>{% endif %}</div>{% endfor %}
+  {% if key == 'supplier' %}<div><label>Emails (comma separated)</label><input name="emails"></div>
+    <div><label>Phones (comma separated)</label><input name="phones"></div>{% endif %}
+  <div><button class="btn">Add record</button></div>
+</form></div>
+<div class="card wrap"><table>
+  <tr>{% for c in cols %}<th>{{ c }}</th>{% endfor %}
+    {% if key == 'supplier' %}<th>Years_In_Business</th><th>Emails</th><th>Phones</th>{% endif %}<th>Actions</th></tr>
+  {% for r in rows %}<tr>
+    {% for c in cols %}<td>{{ r[c] if r[c] is not none else '' }}</td>{% endfor %}
+    {% if key == 'supplier' %}<td>{{ 2026 - r.Est_Year if r.Est_Year else '' }}</td><td>{{ extra[r.Supplier_ID][0] }}</td><td>{{ extra[r.Supplier_ID][1] }}</td>{% endif %}
+    <td class="act">
+      {% if key == 'order' %}<form method="post" action="{{ url_for('order_status', rid=r.Order_ID) }}">
+        <select name="status">{% for s in ['Pending','Confirmed','Fulfilled','Cancelled'] %}<option {{ 'selected' if r.Status == s }}>{{ s }}</option>{% endfor %}</select>
+        <button class="btn sm">Update</button></form>{% endif %}
+      <form method="post" action="{{ url_for('delete', key=key, rid=r[cfg.pk]) }}" onsubmit="return confirm('Delete this record?')">
+        <button class="btn del sm">Delete</button></form></td>
+  </tr>{% else %}<tr><td colspan="{{ cols|length + 1 }}">No records yet.</td></tr>{% endfor %}
+</table></div>
+{% endblock %}
