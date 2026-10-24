@@ -2,7 +2,7 @@
 
 A database-driven showroom management project built for an RDBMS lab. It contains the full MySQL database (constraints, DML, joins, subqueries, views, privileges, transactions, triggers and stored procedures), a Flask web app that works on top of it, and a static website with an interactive ER diagram.
 
-**Author:** Rohini Pandey
+**Author:** Samrat Jaiswal
 
 ## What is inside
 
